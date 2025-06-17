@@ -128,6 +128,15 @@ int validaInfixa(char* str) {
             elementoAnterior = 3;
             continue;
         }
+        
+        if (ehFuncao(str, i, "raiz")) {
+            if (elementoAnterior == 1 || elementoAnterior == 4) {
+                return 0;
+            }
+            i += 4;
+            elementoAnterior = 3;
+            continue;
+        }
 
         // Parênteses
         if (str[i] == '(') {
@@ -214,6 +223,12 @@ int isFunction(const char* str, unsigned long int i, char* nomeFunc) {
         strcpy(nomeFunc, "log");
         return 3;
     }
+    
+    if (strncmp(&str[i], "raiz", 4) == 0) {
+        strcpy(nomeFunc, "raiz");
+        return 4;
+    }
+
     
     return 0;
 }
@@ -365,7 +380,7 @@ char *getFormaInFixa(char *Str) {
             continue;
         }
 
-        // Função (sen, cos, tg, log)
+        // Função (sen, cos, tg, log, raiz)
         char nomeFunc[6];
         int funcTam = isFunction(Str, i, nomeFunc);
         
@@ -429,7 +444,7 @@ char *getFormaInFixa(char *Str) {
     return result;
 }
 
-// Função para avaliar pós-fixa com operadores + - * / ^ e funções sen, cos, tg, log
+// Função para avaliar pós-fixa com operadores + - * / ^ e funções sen, cos, tg, log, raiz
 float getValorPosFixa(char *StrPosFixa) {
     float pilha[128];
     int top = -1;
@@ -442,7 +457,7 @@ float getValorPosFixa(char *StrPosFixa) {
             continue;
         }
 
-        // Função (sen, cos, tg, log)
+        // Função (sen, cos, tg, log, raiz)
         char funcNome[6];
         int funcTam = isFunction(StrPosFixa, i, funcNome);
         if (funcTam != 0) {
@@ -466,6 +481,11 @@ float getValorPosFixa(char *StrPosFixa) {
             else if (strcmp(funcNome, "log") == 0){
                 top++;
                 pilha[top] = log10f(arg);
+            }
+            
+            else if (strcmp(funcNome, "raiz") == 0){
+                top++;
+                pilha[top] = sqrtf(arg);
             }
             
             i += funcTam;
