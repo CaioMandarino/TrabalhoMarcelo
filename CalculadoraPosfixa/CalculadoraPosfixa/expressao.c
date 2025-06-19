@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <math.h>
+#include "expressao.h"
 #define PI 3.14159265358979323846
 
 typedef struct pilhaFuncoes {
@@ -78,7 +79,7 @@ int ehFuncao(const char* str, int i, const char* func) {
 }
 
 int ehOperator(char c) {
-    return (c == '+' || c == '-' || c == '*' || c == '/' || c == '^');
+    return (c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '%');
 }
 
 // Retorna 1 se válido, 0 se inválido
@@ -228,18 +229,18 @@ int isFunction(const char* str, unsigned long int i, char* nomeFunc) {
         strcpy(nomeFunc, "raiz");
         return 4;
     }
-
     
     return 0;
 }
 
 int precedencia(char op) {
     switch(op) {
-        case '^': return 4;
+        case '^': return 3;
         case '*':
-        case '/': return 3;
+        case '%':
+        case '/': return 2;
         case '+':
-        case '-': return 2;
+        case '-': return 1;
         default: return 0;
     }
 }
@@ -444,7 +445,7 @@ char *getFormaInFixa(char *Str) {
     return result;
 }
 
-// Função para avaliar pós-fixa com operadores + - * / ^ e funções sen, cos, tg, log, raiz
+// Função para avaliar pós-fixa com operadores + - * / ^ % e funções sen, cos, tg, log, raiz
 float getValorPosFixa(char *StrPosFixa) {
     float pilha[128];
     int top = -1;
@@ -528,6 +529,10 @@ float getValorPosFixa(char *StrPosFixa) {
                 case '/':
                     top++;
                     pilha[top] = a / b;
+                    break;
+                case '%':
+                    top++;
+                    pilha[top] = fmodf(a, b);
                     break;
                 case '^':
                     top++;
